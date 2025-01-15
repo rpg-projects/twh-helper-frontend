@@ -2,6 +2,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   const container = document.getElementById("container");
   const selectElement = document.getElementById("doc-select");
   const contentDiv = document.getElementById("doc-content");
+  // Create the button element
+  const button = document.createElement("button");
+  button.id = "calcular-hp";
+  button.textContent = "Calcular HP dos chars";
+  button.addEventListener("click", async () => {
+    calcularHP();
+  });
+
+  // Append the button to the container
+  container.appendChild(button);
 
   const devurl = "http://localhost:3000";
   const produrl = "https://twh-helper.onrender.com";
@@ -9,7 +19,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function fetchDocumentNames() {
     try {
-      const response = await fetch(`${produrl}/googleDocs/names`);
+      const response = await fetch(`${devurl}/googleDocs/names`);
       if (!response.ok) throw new Error("Failed to fetch document names");
       const names = await response.json();
 
@@ -28,7 +38,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Fetch and display content of the selected document
   async function fetchDocumentContent(name) {
     try {
-      const response = await fetch(`${produrl}/googleDocs/names/${name}`);
+      const response = await fetch(`${devurl}/googleDocs/names/${name}`);
       if (!response.ok) throw new Error("Failed to fetch document content");
       const data = await response.json();
 
@@ -96,33 +106,42 @@ document.addEventListener("DOMContentLoaded", async () => {
       calculateHPButton.classList.add("loading");
 
       const name = selectElement.value;
+      if (!name) {
+        alert("Selecione um player");
+        // Remove loading animation
+        calculateHPButton.disabled = false;
+        calculateHPButton.textContent = originalText;
+        calculateHPButton.classList.remove("loading");
+      } else {
+        const response = await fetch(`${devurl}/googleDocs/names/${name}`);
+        if (!response.ok) throw new Error("Failed to fetch document content");
+        const data = await response.json();
 
-      const response = await fetch(`${produrl}/googleDocs/names/${name}`);
-      if (!response.ok) throw new Error("Failed to fetch document content");
-      const data = await response.json();
+        const chars = data.chars; // Extract chars array from the response
 
-      const chars = data.chars; // Extract chars array from the response
+        // Send POST request to calculate HP
+        const hpResponse = await fetch(
+          `${devurl}/googleDocs/chars/calculate-hp`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ chars }),
+          }
+        );
 
-      // Send POST request to calculate HP
-      const hpResponse = await fetch(
-        `${produrl}/googleDocs/chars/calculate-hp`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ chars }),
-        }
-      );
+        if (!hpResponse.ok) throw new Error("Failed to calculate HP");
 
-      if (!hpResponse.ok) throw new Error("Failed to calculate HP");
+        const result = await hpResponse.json();
 
-      const result = await hpResponse.json();
-      updateCharListWithHP(result);
-      // Remove loading animation
-      calculateHPButton.disabled = false;
-      calculateHPButton.textContent = originalText;
-      calculateHPButton.classList.remove("loading");
+        updateCharListWithHP(result);
+
+        // Remove loading animation
+        calculateHPButton.disabled = false;
+        calculateHPButton.textContent = originalText;
+        calculateHPButton.classList.remove("loading");
+      }
     } catch (error) {
       console.error("Error calculating HP:", error.message);
       alert("Error: " + error.message);
@@ -136,20 +155,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (selectedName) {
       contentDiv.textContent = "";
       fetchDocumentContent(selectedName);
-
-      const calculateHPButton = document.getElementById("calcular-hp");
-      if (!calculateHPButton) {
-        // Create the button element
-        const button = document.createElement("button");
-        button.id = "calcular-hp";
-        button.textContent = "Calcular HP dos chars";
-        button.addEventListener("click", async () => {
-          calcularHP();
-        });
-      }
-
-      // Append the button to the container
-      container.appendChild(button);
     } else {
       contentDiv.textContent = "";
     }
