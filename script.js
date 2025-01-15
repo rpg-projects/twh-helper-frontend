@@ -137,13 +137,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       contentDiv.textContent = "";
       fetchDocumentContent(selectedName);
 
-      // Create the button element
-      const button = document.createElement("button");
-      button.id = "calcular-hp";
-      button.textContent = "Calcular HP dos chars";
-      button.addEventListener("click", async () => {
-        calcularHP();
-      });
+      const calculateHPButton = document.getElementById("calcular-hp");
+      if (!calculateHPButton) {
+        // Create the button element
+        const button = document.createElement("button");
+        button.id = "calcular-hp";
+        button.textContent = "Calcular HP dos chars";
+        button.addEventListener("click", async () => {
+          calcularHP();
+        });
+      }
 
       // Append the button to the container
       container.appendChild(button);
