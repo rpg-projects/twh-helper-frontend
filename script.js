@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const devurl = "http://localhost:3000";
   const produrl = "https://twh-helper.onrender.com";
+  // activateDeploy
 
   async function fetchDocumentNames() {
     try {
