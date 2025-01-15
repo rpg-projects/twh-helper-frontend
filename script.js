@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function fetchDocumentNames() {
     try {
-      const response = await fetch(`${devurl}/googleDocs/names`);
+      const response = await fetch(`${produrl}/googleDocs/names`);
       if (!response.ok) throw new Error("Failed to fetch document names");
       const names = await response.json();
 
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Fetch and display content of the selected document
   async function fetchDocumentContent(name) {
     try {
-      const response = await fetch(`${devurl}/googleDocs/names/${name}`);
+      const response = await fetch(`${produrl}/googleDocs/names/${name}`);
       if (!response.ok) throw new Error("Failed to fetch document content");
       const data = await response.json();
 
@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         calculateHPButton.textContent = originalText;
         calculateHPButton.classList.remove("loading");
       } else {
-        const response = await fetch(`${devurl}/googleDocs/names/${name}`);
+        const response = await fetch(`${produrl}/googleDocs/names/${name}`);
         if (!response.ok) throw new Error("Failed to fetch document content");
         const data = await response.json();
 
@@ -121,7 +121,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         // Send POST request to calculate HP
         const hpResponse = await fetch(
-          `${devurl}/googleDocs/chars/calculate-hp`,
+          `${produrl}/googleDocs/chars/calculate-hp`,
           {
             method: "POST",
             headers: {
