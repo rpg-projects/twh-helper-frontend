@@ -65,6 +65,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  function updateCharListWithHP(chars) {
+    // Select the list container
+    const charList = document.querySelector(".chars-list ul");
+    if (!charList) {
+      console.error("Character list not found.");
+      return;
+    }
+
+    // Update each <li> with the corresponding char.hp value
+    const listItems = charList.querySelectorAll("li");
+    chars.forEach((char, index) => {
+      if (listItems[index]) {
+        // Update text content to include char.hp
+        listItems[
+          index
+        ].textContent = `${char.char} - ${char.god} - Nível ${char.level} - HP: ${char.hp}`;
+      }
+    });
+  }
+
   async function calcularHP() {
     try {
       const name = selectElement.value;
@@ -74,7 +94,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       const data = await response.json();
 
       const chars = data.chars; // Extract chars array from the response
-      console.log("chars :>> ", chars);
 
       // Send POST request to calculate HP
       const hpResponse = await fetch(
@@ -91,10 +110,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (!hpResponse.ok) throw new Error("Failed to calculate HP");
 
       const result = await hpResponse.json();
-      console.log("HP calculation result:", result);
-
-      // Display success or result as needed
-      alert("HP calculation completed successfully!");
+      updateCharListWithHP(result);
     } catch (error) {
       console.error("Error calculating HP:", error.message);
       alert("Error: " + error.message);
