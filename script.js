@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
+  const container = document.getElementById("container");
   const selectElement = document.getElementById("doc-select");
   const contentDiv = document.getElementById("doc-content");
-  const calculateHPButton = document.getElementById("calcular-hp");
 
   const devurl = "http://localhost:3000";
   const produrl = "https://twh-helper.onrender.com";
@@ -87,6 +87,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function calcularHP() {
     try {
+      const calculateHPButton = document.getElementById("calcular-hp");
+      const originalText = calculateHPButton.textContent;
+      // Show loading animation
+      calculateHPButton.disabled = true;
+      calculateHPButton.textContent = "Calculando...";
+      calculateHPButton.classList.add("loading");
+
       const name = selectElement.value;
 
       const response = await fetch(`${devurl}/googleDocs/names/${name}`);
@@ -111,6 +118,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const result = await hpResponse.json();
       updateCharListWithHP(result);
+      // Remove loading animation
+      calculateHPButton.disabled = false;
+      calculateHPButton.textContent = originalText;
+      calculateHPButton.classList.remove("loading");
     } catch (error) {
       console.error("Error calculating HP:", error.message);
       alert("Error: " + error.message);
@@ -124,18 +135,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (selectedName) {
       contentDiv.textContent = "";
       fetchDocumentContent(selectedName);
+
+      // Create the button element
+      const button = document.createElement("button");
+      button.id = "calcular-hp";
+      button.textContent = "Calcular HP dos chars";
+      button.addEventListener("click", async () => {
+        calcularHP();
+      });
+
+      // Append the button to the container
+      container.appendChild(button);
     } else {
       contentDiv.textContent = "";
     }
   });
-
-  if (calculateHPButton) {
-    calculateHPButton.addEventListener("click", async () => {
-      calcularHP();
-    });
-  } else {
-    console.error("Button not found in the DOM.");
-  }
 
   // Initialize
   fetchDocumentNames();
