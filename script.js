@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const consIndex = atributos.findIndex((atri) => atri == "CONSTITUIÇÃO\n");
     let cons = atributos[consIndex + 1];
     let consAdd = "0";
-    if (cons.includes(" ")) {
+    if (cons && cons.includes(" ")) {
       [cons, consAdd] = cons.split(" ");
       consAdd = consAdd.split("(")[1].split(")")[0];
     }
@@ -296,7 +296,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const selectedName = event.target.value;
     calculateHPButton.disabled = false;
     const simulateEvolution = document.getElementById("simulate-evolution");
-    if (simulateEvolution) simulateEvolution.display = none;
+    console.log("simulateEvolution :>> ", simulateEvolution);
+    if (simulateEvolution) simulateEvolution.remove();
 
     if (selectedName) {
       contentDiv.textContent = "";
