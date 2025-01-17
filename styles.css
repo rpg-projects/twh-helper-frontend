@@ -7,8 +7,9 @@ body {
   width: 100%;
   /* justify-content: center;
     align-items: center; */
-  height: 100vh;
-  overflow-x: hidden;
+  min-height: 100vh;
+  overflow-x: initial;
+  overflow: auto;
 }
 
 /* Full-screen loading container */
@@ -45,9 +46,10 @@ body {
 .container {
   background: #fff;
   padding: 20px;
-
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
   width: 20%;
+
   text-align: center;
 }
 
@@ -57,11 +59,35 @@ h1 {
 }
 
 select {
-  width: 100%;
-  padding: 8px;
+  width: 60%;
+  padding: 16px;
   margin-bottom: 20px;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+.calculate-hp-button {
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #211b14, #44392c);
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.calculate-hp-button:hover {
+  background: linear-gradient(135deg, #392f24, #675948);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.calculate-hp-button:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 #doc-content {
@@ -75,7 +101,7 @@ select {
   padding: 20px 60px;
 
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adding a subtle shadow */
-  width: 90%;
+
   display: flex;
   flex-direction: row;
   justify-content: space-around;

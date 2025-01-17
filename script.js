@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Create the button element
   const button = document.createElement("button");
   button.id = "calcular-hp";
+  button.classList.add("calculate-hp-button");
   button.textContent = "Calcular HP dos chars";
   button.addEventListener("click", async () => {
     calcularHP();
@@ -22,13 +23,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function getPlayerNames() {
     try {
-      const response =
-        env == "prod"
-          ? await fetch(`${produrl}/googleDocs/names`)
-          : await fetch(`${devurl}/googleDocs/names`);
-      console.log("response 1 :>> ", response);
-      if (!response.ok) throw new Error("Failed to fetch document names");
-      const names = await response.json();
+      // const response =
+      //   env == "prod"
+      //     ? await fetch(`${produrl}/googleDocs/names`)
+      //     : await fetch(`${devurl}/googleDocs/names`);
+      // console.log("response 1 :>> ", response);
+      // if (!response.ok) throw new Error("Failed to fetch document names");
+      // const names = await response.json();
+      const names = ["LILA"];
 
       // Populate the select element
       names.forEach((name) => {
