@@ -295,7 +295,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   selectElement.addEventListener("change", (event) => {
     const selectedName = event.target.value;
     calculateHPButton.disabled = false;
-    simulateEvolution.display = none;
+    const simulateEvolution = document.getElementById("simulate-evolution");
+    if (simulateEvolution) simulateEvolution.display = none;
 
     if (selectedName) {
       contentDiv.textContent = "";
