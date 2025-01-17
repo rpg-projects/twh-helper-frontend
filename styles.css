@@ -138,8 +138,10 @@ li {
 .simulate-evolution {
   display: block;
   margin: auto;
-  margin-right: 42.5%;
+
   margin-top: 1rem;
+  padding-left: 2.8rem;
+  padding-right: 2.8rem;
 }
 
 /* Change background of number input */

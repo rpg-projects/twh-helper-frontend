@@ -23,15 +23,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function getPlayerNames() {
     try {
-      // const response =
-      //   env == "prod"
-      //     ? await fetch(`${produrl}/googleDocs/names`)
-      //     : await fetch(`${devurl}/googleDocs/names`);
-      // console.log("response 1 :>> ", response);
-      // if (!response.ok) throw new Error("Failed to fetch document names");
-      // const names = await response.json();
-      // localStorage.setItem("playerNames", names);
-      const names = ["ADELE"];
+      const response =
+        env == "prod"
+          ? await fetch(`${produrl}/googleDocs/names`)
+          : await fetch(`${devurl}/googleDocs/names`);
+      console.log("response 1 :>> ", response);
+      if (!response.ok) throw new Error("Failed to fetch document names");
+      const names = await response.json();
+      localStorage.setItem("playerNames", names);
 
       // Populate the select element
       names.forEach((name) => {
@@ -178,7 +177,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           simularEvolucao();
         });
         // Append the button to the container
-        contentDiv.appendChild(simulateEvolution);
+        container.appendChild(simulateEvolution);
 
         // Remove loading animation
         calculateHPButton.disabled = false;
@@ -268,18 +267,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         consInput.addEventListener("input", (e) => {
           // Update cons value as the user edits
           const newCons = parseInt(e.target.value, 10) || 0; // Default to 0 if input is invalid
-          console.log("newCons :>> ", newCons);
+
           const base = (10 + newCons) * 2;
-          console.log("base :>> ", "(10 +", newCons, ") * 2 = ", base);
           const nivel = char.level * (5 + newCons);
-          console.log(
-            "nivel :>> ",
-            char.level,
-            " * (5 + ",
-            newCons,
-            ") = ",
-            nivel
-          );
+
           char.hpSimulated = base + nivel + char.vigor;
 
           // Update the HP info text node
