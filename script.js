@@ -11,26 +11,27 @@ document.addEventListener("DOMContentLoaded", async () => {
   const selectElement = document.getElementById("doc-select");
   const contentDiv = document.getElementById("doc-content");
   // Create the button element
-  const button = document.createElement("button");
-  button.id = "calcular-hp";
-  button.classList.add("calculate-hp-button");
-  button.textContent = "Calcular HP dos chars";
-  button.addEventListener("click", async () => {
+  const calculateHPButton = document.createElement("button");
+  calculateHPButton.id = "calcular-hp";
+  calculateHPButton.classList.add("calculate-hp-button");
+  calculateHPButton.textContent = "Calcular HP dos chars";
+  calculateHPButton.addEventListener("click", async () => {
     calcularHP();
   });
   // Append the button to the container
-  container.appendChild(button);
+  container.appendChild(calculateHPButton);
 
   async function getPlayerNames() {
     try {
-      // const response =
-      //   env == "prod"
-      //     ? await fetch(`${produrl}/googleDocs/names`)
-      //     : await fetch(`${devurl}/googleDocs/names`);
-      // console.log("response 1 :>> ", response);
-      // if (!response.ok) throw new Error("Failed to fetch document names");
-      // const names = await response.json();
-      const names = ["LILA"];
+      const response =
+        env == "prod"
+          ? await fetch(`${produrl}/googleDocs/names`)
+          : await fetch(`${devurl}/googleDocs/names`);
+      console.log("response 1 :>> ", response);
+      if (!response.ok) throw new Error("Failed to fetch document names");
+      const names = await response.json();
+      localStorage.setItem("playerNames", names);
+      // const names = ["LILA"];
 
       // Populate the select element
       names.forEach((name) => {
@@ -57,6 +58,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.log("response 2 :>> ", response);
       if (!response.ok) throw new Error("Failed to fetch document content");
       const data = await response.json();
+      localStorage.setItem("playersChars", JSON.stringify(data.chars));
 
       const playerBank = document.createElement("div");
       playerBank.classList.add("player-bank");
@@ -79,7 +81,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const charList = document.createElement("ul");
       data.chars.forEach((char) => {
         const charElem = document.createElement("li");
-        charElem.textContent = `${char.char} - ${char.god} - Nível ${char.level}`;
+        charElem.textContent = `${char.name} - ${char.god} - Nível ${char.level}`;
         charList.appendChild(charElem);
       });
 
@@ -107,14 +109,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Update text content to include char.hp
         listItems[
           index
-        ].textContent = `${char.char} - ${char.god} - Nível ${char.level} - HP: ${char.hp}`;
+        ].textContent = `${char.name} - ${char.god} - Nível ${char.level} - HP: ${char.hp}`;
       }
     });
   }
 
   async function calcularHP() {
     try {
-      const calculateHPButton = document.getElementById("calcular-hp");
       const originalText = calculateHPButton.textContent;
       // Show loading animation
       calculateHPButton.disabled = true;
@@ -129,14 +130,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         calculateHPButton.textContent = originalText;
         calculateHPButton.classList.remove("loading");
       } else {
-        const response =
-          env == "prod"
-            ? await fetch(`${produrl}/googleDocs/names/${name}`)
-            : await fetch(`${devurl}/googleDocs/names/${name}`);
-        if (!response.ok) throw new Error("Failed to fetch document content");
-        const data = await response.json();
+        let chars = localStorage.getItem("playersChars");
+        chars = JSON.parse(chars);
 
-        const chars = data.chars; // Extract chars array from the response
+        if (!chars || chars.length == 0) {
+          const response =
+            env == "prod"
+              ? await fetch(`${produrl}/googleDocs/names/${name}`)
+              : await fetch(`${devurl}/googleDocs/names/${name}`);
+          if (!response.ok) throw new Error("Failed to fetch document content");
+          const data = await response.json();
+          chars = data.chars;
+        }
 
         // Send POST request to calculate HP
         const hpResponse =
@@ -156,11 +161,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 body: JSON.stringify({ chars }),
               });
 
-        console.log("hpResponse :>> ", hpResponse);
-
         if (!hpResponse.ok) throw new Error("Failed to calculate HP");
 
         const result = await hpResponse.json();
+        localStorage.setItem("playersChars", JSON.stringify(result));
 
         updateCharListWithHP(result);
 
