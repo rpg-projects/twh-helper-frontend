@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Create the button element
   const calculateHPButton = document.createElement("button");
   calculateHPButton.id = "calcular-hp";
-  calculateHPButton.classList.add("calculate-hp-button");
+  calculateHPButton.classList.add("buttons");
   calculateHPButton.textContent = "Calcular HP dos chars";
   calculateHPButton.addEventListener("click", async () => {
     calcularHP();
@@ -23,15 +23,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function getPlayerNames() {
     try {
-      const response =
-        env == "prod"
-          ? await fetch(`${produrl}/googleDocs/names`)
-          : await fetch(`${devurl}/googleDocs/names`);
-      console.log("response 1 :>> ", response);
-      if (!response.ok) throw new Error("Failed to fetch document names");
-      const names = await response.json();
-      localStorage.setItem("playerNames", names);
-      // const names = ["LILA"];
+      // const response =
+      //   env == "prod"
+      //     ? await fetch(`${produrl}/googleDocs/names`)
+      //     : await fetch(`${devurl}/googleDocs/names`);
+      // console.log("response 1 :>> ", response);
+      // if (!response.ok) throw new Error("Failed to fetch document names");
+      // const names = await response.json();
+      // localStorage.setItem("playerNames", names);
+      const names = ["ADELE"];
 
       // Populate the select element
       names.forEach((name) => {
@@ -168,10 +168,24 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         updateCharListWithHP(result);
 
+        // Create the simulate evolution button
+        const simulateEvolution = document.createElement("button");
+        simulateEvolution.id = "simulate-evolution";
+        simulateEvolution.classList.add("buttons");
+        simulateEvolution.classList.add("simulate-evolution");
+        simulateEvolution.textContent = "Simular evolução";
+        simulateEvolution.addEventListener("click", async () => {
+          simularEvolucao();
+        });
+        // Append the button to the container
+        contentDiv.appendChild(simulateEvolution);
+
         // Remove loading animation
         calculateHPButton.disabled = false;
         calculateHPButton.textContent = originalText;
         calculateHPButton.classList.remove("loading");
+
+        calculateHPButton.disabled = true;
       }
     } catch (error) {
       console.error("Error calculating HP:", error.message);
@@ -179,9 +193,117 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  function extractConsValue(atributos) {
+    const consIndex = atributos.findIndex((atri) => atri == "CONSTITUIÇÃO\n");
+    let cons = atributos[consIndex + 1];
+    let consAdd = "0";
+    if (cons.includes(" ")) {
+      [cons, consAdd] = cons.split(" ");
+      consAdd = consAdd.split("(")[1].split(")")[0];
+    }
+    return Number(cons) + Number(consAdd);
+  }
+
+  function simular(chars) {
+    chars = chars.map((char) => {
+      const cons = extractConsValue(char.atributos);
+      const base = (10 + cons) * 2;
+      const nivel = char.level * (5 + cons);
+
+      return { ...char, hpSimulated: base + nivel + char.vigor };
+    });
+
+    return chars;
+  }
+
+  async function simularEvolucao() {
+    let chars = localStorage.getItem("playersChars");
+    chars = JSON.parse(chars);
+
+    if (!chars || chars.length == 0) {
+      const response =
+        env == "prod"
+          ? await fetch(`${produrl}/googleDocs/names/${name}`)
+          : await fetch(`${devurl}/googleDocs/names/${name}`);
+      if (!response.ok) throw new Error("Failed to fetch document content");
+      const data = await response.json();
+      chars = data.chars;
+    }
+
+    chars = simular(chars);
+
+    // colocar para aparecer na linha debaixo
+    // Select the list container
+    const charList = document.querySelector(".chars-list ul");
+    if (!charList) {
+      console.error("Character list not found.");
+      return;
+    }
+
+    // Update each <li> adding simulation
+    const listItems = charList.querySelectorAll("li");
+    chars.forEach((char, index) => {
+      if (listItems[index]) {
+        listItems[index].textContent = "";
+
+        // Create container div
+        const container = document.createElement("div");
+
+        // Create first paragraph
+        const para1 = document.createElement("p");
+        para1.textContent = `${char.name} - ${char.god} - Nível ${char.level} - HP: ${char.hp}`;
+
+        // Create second paragraph with editable CONS
+        const para2 = document.createElement("p");
+        para2.textContent = `Próximo nível: ${char.level + 1} - CONS: `;
+
+        // Add HP information text node
+        const hpInfo = document.createTextNode(` - HP: ${char.hpSimulated}`);
+
+        // Create input for CONS
+        const consInput = document.createElement("input");
+        consInput.type = "number";
+        consInput.value = extractConsValue(char.atributos);
+        consInput.style.width = "30px";
+        consInput.addEventListener("input", (e) => {
+          // Update cons value as the user edits
+          const newCons = parseInt(e.target.value, 10) || 0; // Default to 0 if input is invalid
+          console.log("newCons :>> ", newCons);
+          const base = (10 + newCons) * 2;
+          console.log("base :>> ", "(10 +", newCons, ") * 2 = ", base);
+          const nivel = char.level * (5 + newCons);
+          console.log(
+            "nivel :>> ",
+            char.level,
+            " * (5 + ",
+            newCons,
+            ") = ",
+            nivel
+          );
+          char.hpSimulated = base + nivel + char.vigor;
+
+          // Update the HP info text node
+          hpInfo.nodeValue = ` - HP: ${char.hpSimulated}`;
+        });
+
+        // Append input and text to para2
+        para2.appendChild(consInput);
+        para2.appendChild(hpInfo);
+
+        // Append paragraphs to the container
+        container.appendChild(para1);
+        container.appendChild(para2);
+
+        // Append the container to the <li>
+        listItems[index].appendChild(container);
+      }
+    });
+  }
+
   // Add event listener for selection change
   selectElement.addEventListener("change", (event) => {
     const selectedName = event.target.value;
+    calculateHPButton.disabled = false;
 
     if (selectedName) {
       contentDiv.textContent = "";

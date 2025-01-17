@@ -66,7 +66,7 @@ select {
   border-radius: 4px;
 }
 
-.calculate-hp-button {
+.buttons {
   padding: 12px 24px;
   font-size: 16px;
   font-weight: 600;
@@ -79,13 +79,13 @@ select {
   transition: all 0.3s ease;
 }
 
-.calculate-hp-button:hover {
+.buttons:hover {
   background: linear-gradient(135deg, #392f24, #675948);
   transform: translateY(-2px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
-.calculate-hp-button:active {
+.buttons:active {
   transform: translateY(2px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -116,16 +116,46 @@ select {
 .chars-list {
   list-style: none;
   text-align: center;
-  margin-top: 30px;
+  margin-top: 5px;
+  align-items: center;
+  padding: 0 !important;
 }
 
 ul {
   list-style: none;
   list-style-type: none;
+  margin: 0;
+  width: 100%;
+  padding-inline-start: 0px !important;
 }
 
 li {
-  margin-top: 20px;
+  padding: 1.5rem;
+  margin-top: 5px;
+  background-color: #e1ddda;
+}
+
+.simulate-evolution {
+  display: block;
+  margin: auto;
+  margin-right: 42.5%;
+  margin-top: 1rem;
+}
+
+/* Change background of number input */
+input[type="number"] {
+  background-color: #dcdcdc; /* Light blue background */
+  border: 2px solid #211b14; /* Blue border */
+  border-radius: 5px; /* Rounded corners */
+  padding: 2px; /* Padding for better appearance */
+  font-size: 14px; /* Font size */
+  /* color: #333; Text color */
+}
+
+/* Change background when focused */
+input[type="number"]:focus {
+  background-color: #f0f8ff; /* Grey background when focused */
+  border-color: #0056b3; /* Darker blue border */
 }
 
 .loading {
