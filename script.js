@@ -5,6 +5,9 @@ const produrl = "https://twh-helper.onrender.com";
 
 document.addEventListener("DOMContentLoaded", async () => {
   const container = document.getElementById("container");
+  container.style.display = "none"; // Don't show the main content yet
+  const loading = document.getElementById("loading");
+
   const selectElement = document.getElementById("doc-select");
   const contentDiv = document.getElementById("doc-content");
   // Create the button element
@@ -34,6 +37,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         option.textContent = name;
         selectElement.appendChild(option);
       });
+
+      loading.style.display = "none"; // Hide the loading animation
+      container.style.display = "block"; // Show the main content
     } catch (error) {
       contentDiv.textContent = "Error loading document names: " + error.message;
     }
