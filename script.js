@@ -1,3 +1,8 @@
+const env = "dev";
+
+const devurl = "http://localhost:3000";
+const produrl = "https://twh-helper.onrender.com";
+
 document.addEventListener("DOMContentLoaded", async () => {
   const container = document.getElementById("container");
   const selectElement = document.getElementById("doc-select");
@@ -9,17 +14,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   button.addEventListener("click", async () => {
     calcularHP();
   });
-
   // Append the button to the container
   container.appendChild(button);
 
-  const devurl = "http://localhost:3000";
-  const produrl = "https://twh-helper.onrender.com";
-  // activateDeploy
-
-  async function fetchDocumentNames() {
+  async function getPlayerNames() {
     try {
-      const response = await fetch(`${produrl}/googleDocs/names`);
+      const response =
+        env == "prod"
+          ? await fetch(`${produrl}/googleDocs/names`)
+          : await fetch(`${devurl}/googleDocs/names`);
+      console.log("response 1 :>> ", response);
       if (!response.ok) throw new Error("Failed to fetch document names");
       const names = await response.json();
 
@@ -36,9 +40,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Fetch and display content of the selected document
-  async function fetchDocumentContent(name) {
+  async function getCharsByPlayer(name) {
     try {
-      const response = await fetch(`${produrl}/googleDocs/names/${name}`);
+      const response =
+        env == "prod"
+          ? await fetch(`${produrl}/googleDocs/names/${name}`)
+          : await fetch(`${devurl}/googleDocs/names/${name}`);
+      console.log("response 2 :>> ", response);
       if (!response.ok) throw new Error("Failed to fetch document content");
       const data = await response.json();
 
@@ -113,23 +121,34 @@ document.addEventListener("DOMContentLoaded", async () => {
         calculateHPButton.textContent = originalText;
         calculateHPButton.classList.remove("loading");
       } else {
-        const response = await fetch(`${produrl}/googleDocs/names/${name}`);
+        const response =
+          env == "prod"
+            ? await fetch(`${produrl}/googleDocs/names/${name}`)
+            : await fetch(`${devurl}/googleDocs/names/${name}`);
         if (!response.ok) throw new Error("Failed to fetch document content");
         const data = await response.json();
 
         const chars = data.chars; // Extract chars array from the response
 
         // Send POST request to calculate HP
-        const hpResponse = await fetch(
-          `${produrl}/googleDocs/chars/calculate-hp`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ chars }),
-          }
-        );
+        const hpResponse =
+          env == "prod"
+            ? await fetch(`${produrl}/googleDocs/chars/calculate-hp`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ chars }),
+              })
+            : await fetch(`${devurl}/googleDocs/chars/calculate-hp`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ chars }),
+              });
+
+        console.log("hpResponse :>> ", hpResponse);
 
         if (!hpResponse.ok) throw new Error("Failed to calculate HP");
 
@@ -154,12 +173,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (selectedName) {
       contentDiv.textContent = "";
-      fetchDocumentContent(selectedName);
+      getCharsByPlayer(selectedName);
     } else {
       contentDiv.textContent = "";
     }
   });
 
   // Initialize
-  fetchDocumentNames();
+  getPlayerNames();
 });
