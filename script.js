@@ -1,4 +1,4 @@
-const env = "dev";
+const env = "prod";
 
 const devurl = "http://localhost:3000";
 const produrl = "https://twh-helper.onrender.com";
