@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         env == "prod"
           ? await fetch(`${produrl}/googleDocs/names`)
           : await fetch(`${devurl}/googleDocs/names`);
-      console.log("response 1 :>> ", response);
+
       if (!response.ok) throw new Error("Failed to fetch document names");
       const names = await response.json();
       localStorage.setItem("playerNames", names);
@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         env == "prod"
           ? await fetch(`${produrl}/googleDocs/names/${name}`)
           : await fetch(`${devurl}/googleDocs/names/${name}`);
-      console.log("response 2 :>> ", response);
+
       if (!response.ok) throw new Error("Failed to fetch document content");
       const data = await response.json();
       localStorage.setItem("playersChars", JSON.stringify(data.chars));
@@ -296,7 +296,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const selectedName = event.target.value;
     calculateHPButton.disabled = false;
     const simulateEvolution = document.getElementById("simulate-evolution");
-    console.log("simulateEvolution :>> ", simulateEvolution);
+
     if (simulateEvolution) simulateEvolution.remove();
 
     if (selectedName) {
